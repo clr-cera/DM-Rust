@@ -3,11 +3,7 @@ extern crate integer_sqrt;
 use integer_sqrt::IntegerSquareRoot;
 
 fn transform(a: u64, e: u64, d: u64) -> u64{
-    let mut result: u64 = 1;
-    for _ in 1..=e {
-        result = (result as u128 * a as u128) as u64 % d;
-    }
-    return result;
+    power_mod(a as u128, e as u128, d as u128) as u64
 }
 
 pub fn process(vector : &Vec<u64>, e: u64, n: u64) -> Vec<u64>{
@@ -97,9 +93,9 @@ pub fn composite_test_fermat(number: u128, test: u128) -> bool{
     else {return false;}
 }
 
-pub fn composite_test_miller_rabin(number: u128, basis: u128) -> bool{
-
-}
+//pub fn composite_test_miller_rabin(number: u128, basis: u128) -> bool{
+//
+//}
 
 fn power_mod(number: u128, exp: u128, module: u128) -> u128 {
     let mut result: u128 = 1;
@@ -108,4 +104,4 @@ fn power_mod(number: u128, exp: u128, module: u128) -> u128 {
     }
 
     return result;
-} 
+}
