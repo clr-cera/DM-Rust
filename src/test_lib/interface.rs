@@ -20,7 +20,12 @@ impl DataType {
 }
 
 
-pub fn receive() -> (Vec<u64>, DataType, (u64, u64, u64)) {
+pub fn receive_work() -> i16 {
+    println!("Select the type of job you want to do:\n0 for cryptography\n1 to check a prime\n2 to check a pseudoprime\n3 to generate a prime\n4 to quit");
+    receive_number() as i16
+}
+
+pub fn receive_crypto() -> (Vec<u64>, DataType, (u64, u64, u64)) {
     println!("Select 0 if you want to enter numbers or 1 if you want to enter text!");
     let data_type: DataType = loop {
         match receive_number() {
@@ -64,7 +69,16 @@ pub fn receive() -> (Vec<u64>, DataType, (u64, u64, u64)) {
     }
 
     return (number_vector,data_type, keys);
+}
 
+pub fn receive_prime_check() -> u64{
+    println!("Enter the number to check if it is a prime:");
+    receive_number()
+}
+
+pub fn receive_pseudoprime_check() -> (u64, u64){
+    println!("Enter the number to check if it is a pseudoprime and its base:");
+    (receive_number(), receive_number())
 }
 
 fn receive_number() -> u64{

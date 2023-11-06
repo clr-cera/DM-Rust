@@ -1,35 +1,18 @@
-use rsa::*;
-mod interface;
+mod test_lib;
+use test_lib::jobs;
 
 
 
 fn main() {
-    let (init_info, data_type, keys) = interface::receive();
-    
-    let n: u64; 
-    let e: u64;
-    let f: u64;
-   
-    if keys.0 != 0 {
-        n = keys.0;
-        e = keys.1;
-        f = keys.2;
+    loop {
+        match test_lib::receive_work() {
+            0 => jobs::cryptography_job(),
+            1 => jobs::check_prime_job(),
+            2 => jobs::check_pseudoprime_job(),
+            3 => jobs::generate_prime_job(),
+            4 => break,
+            _ => (),
+        }
     }
-
-    else {
-        let p: u64 = 51001;
-        let q: u64 = 41843;
-        let theta: u64 = u64::from((p - 1) * (q - 1));
-        n = u64::from(p * q);
-        (f, e) = find_n_and_inverse(theta);
-    }
-
-    let encoded = process(&init_info, e, n);
-    println!("{:?}", encoded);
-
-    let decoded = process(&encoded, f, n);
-    data_type.print(&decoded)
 }
-
-
 
