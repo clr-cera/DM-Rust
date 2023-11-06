@@ -1,4 +1,5 @@
 use rsa::*;
+use crate::test_lib::interface;
 
 pub fn cryptography_job() {
     let (init_info, data_type, keys) = interface::receive_crypto();
