@@ -1,8 +1,6 @@
 mod test_lib;
 use test_lib::jobs;
 
-
-
 fn main() {
     loop {
         match test_lib::receive_work() {

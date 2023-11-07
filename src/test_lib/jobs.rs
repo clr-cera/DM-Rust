@@ -43,14 +43,14 @@ pub fn check_pseudoprime_job() {
     let pseudoprimality: u16 = is_pseudo_prime(number as u128, base as u128);
 
     if pseudoprimality == 1 {
-        println!("Your number is a pseudoprime!");
+        println!("{number} is a pseudoprime in base {base}!");
     }
 
     else if pseudoprimality == 2 {
-        println!("Your number is a prime!");
+        println!("{number} is a prime!");
     }
 
-    else {println!("Your number is just composite!");}
+    else {println!("{number} is just composite and {base} is one of its witnesses!");}
 }
 
 pub fn generate_prime_job() {
