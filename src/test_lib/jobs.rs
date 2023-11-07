@@ -73,7 +73,7 @@ pub fn check_strong_pseudoprime_job() {
 }
 pub fn generate_prime_job() {
     let digits = interface::receive_prime_generation();
-    let prime = gen::generate_prime_from(digits);
+    let prime = gen::generate_first_prime_from(digits);
     println!("The first prime of {digits} digits is {prime}!");
 }
 

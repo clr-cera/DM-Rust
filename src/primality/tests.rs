@@ -25,13 +25,12 @@ pub fn composite_test_miller_rabin(number: u128, base: u128) -> bool{
 }
 
 pub fn is_prime(number: u128) -> bool {
-    for i in 2..number/16{
+    if number % 2 == 0 {return false;}
+
+    for i in 2..=10{
         if composite_test_miller_rabin(number, i) == true {
             return false;
         }
-    }
-    if composite_test_bruteforce(number) == true {
-        return false;
     }
 
     return true;
