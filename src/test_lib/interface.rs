@@ -23,7 +23,7 @@ impl DataType {
 
 pub fn receive_work() -> i16 {
     sleep(Duration::from_millis(500));
-    println!("Select the type of job you want to do:\n0 for cryptography\n1 to check a prime\n2 to check a pseudoprime\n3 to generate a prime\n4 to quit");
+    println!("\nSelect the type of job you want to do:\n0 for cryptography\n1 to check a prime\n2 to check a pseudoprime\n3 to generate a prime\n4 to quit");
     let choice = receive_number() as i16;
 
     print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
