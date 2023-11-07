@@ -1,8 +1,6 @@
 use rsa::*;
 mod interface;
 
-
-
 fn main() {
     let (init_info, data_type, keys) = interface::receive();
     
@@ -30,6 +28,3 @@ fn main() {
     let decoded = process(&encoded, f, n);
     data_type.print(&decoded)
 }
-
-
-
