@@ -45,6 +45,7 @@ pub fn receive_crypto() -> (Vec<u64>, DataType, (u64, u64, u64)) {
 
     match data_type {
         DataType::Text => {
+            println!("Enter the text:");
             let text: String = read_string();
             for char in text.chars() {
                 number_vector.push(char as u64);
