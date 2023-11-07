@@ -56,6 +56,21 @@ pub fn check_pseudoprime_job() {
     else {println!("{number} is just composite and {base} is one of its witnesses!");}
 }
 
+pub fn check_strong_pseudoprime_job() {
+    let (number, base) = interface::receive_strong_pseudoprime_check();
+
+    let strong_pseudoprimality: u16 = tests::is_strong_pseudo_prime(number as u128, base as u128);
+
+    if strong_pseudoprimality == 1 {
+        println!("{number} is a strong pseudoprime in base {base}!");
+    }
+
+    else if strong_pseudoprimality == 2 {
+        println!("{number} is a prime!");
+    }
+
+    else {println!("{number} is just composite and {base} is one of its witnesses!");}
+}
 pub fn generate_prime_job() {
 
 }

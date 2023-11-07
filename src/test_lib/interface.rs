@@ -23,7 +23,7 @@ impl DataType {
 
 pub fn receive_work() -> i16 {
     sleep(Duration::from_millis(500));
-    println!("\nSelect the type of job you want to do:\n0 for cryptography\n1 to check a prime\n2 to check a pseudoprime\n3 to generate a prime\n4 to quit");
+    println!("\nSelect the type of job you want to do:\n0 for cryptography\n1 to check a prime\n2 to check a pseudoprime\n3 to check a strong pseudoprime\n4 to generate a prime\n5 to quit");
     let choice = receive_number() as i16;
 
     print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
@@ -91,6 +91,15 @@ pub fn receive_prime_check() -> u64{
 
 pub fn receive_pseudoprime_check() -> (u64, u64){
     println!("Enter the number to check if it is a pseudoprime and its base:");
+    let result = (receive_number(), receive_number());
+    
+    print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+    sleep(Duration::from_millis(500));
+    result
+}
+
+pub fn receive_strong_pseudoprime_check() -> (u64, u64){
+    println!("Enter the number to check if it is a strong pseudoprime and its base:");
     let result = (receive_number(), receive_number());
     
     print!("{esc}[2J{esc}[1;1H", esc = 27 as char);

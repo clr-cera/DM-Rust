@@ -47,6 +47,17 @@ pub fn is_pseudo_prime(number: u128, base: u128) -> u16 {
 
 }
 
+pub fn is_strong_pseudo_prime(number: u128, base: u128) -> u16 {
+    let miller_result = composite_test_miller_rabin(number as u128, base as u128);
+    let brute_result = composite_test_bruteforce(number as u128);
+
+    if miller_result == false && brute_result == true { return 1;}
+    else if brute_result == false { return 2;}
+    else {return 0;}
+
+}
+
+
 pub fn composite_test_bruteforce(number: u128) -> bool{
     for i in 2..=number.integer_sqrt() {
         if number % i == 0 {return true;}
