@@ -107,6 +107,15 @@ pub fn receive_strong_pseudoprime_check() -> (u64, u64){
     result
 }
 
+pub fn receive_prime_generation() -> u16{
+    println!("Enter the number of binary digits of your desired prime");
+    let result = receive_number() as u16;
+    
+    print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+    sleep(Duration::from_millis(500));
+    result
+}
+
 fn receive_number() -> u64{
     let mut string = String::new();
     io::stdin()

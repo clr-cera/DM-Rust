@@ -1,5 +1,5 @@
 use discrete_mathematics::modular;
-use discrete_mathematics::primality::tests;
+use discrete_mathematics::primality::{tests, gen};
 use discrete_mathematics::cryptography::rsa;
 
 use crate::test_lib::interface;
@@ -72,6 +72,8 @@ pub fn check_strong_pseudoprime_job() {
     else {println!("{number} is just composite and {base} is one of its witnesses!");}
 }
 pub fn generate_prime_job() {
-
+    let digits = interface::receive_prime_generation();
+    let prime = gen::generate_prime_from(digits);
+    println!("The first prime of {digits} digits is {prime}!");
 }
 

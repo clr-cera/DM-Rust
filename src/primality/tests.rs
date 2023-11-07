@@ -16,7 +16,7 @@ pub fn composite_test_miller_rabin(number: u128, base: u128) -> bool{
     if first == 1 {return false}
 
     for r in 0..exp {
-        let result = modular::power_mod(base, constant * modular::power_mod(2, r as u128, number), number);
+        let result = modular::power_mod(base, constant * 2u128.pow(r as u32), number);
         if result == number-1 {return false}
     }
 
