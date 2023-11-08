@@ -4,6 +4,8 @@ use discrete_mathematics::cryptography::rsa;
 
 use crate::test_lib::interface;
 
+use std::time::{Duration, Instant};
+
 pub fn cryptography_job() {
     let (init_info, data_type, keys) = interface::receive_crypto();
     
@@ -73,7 +75,12 @@ pub fn check_strong_pseudoprime_job() {
 }
 pub fn generate_prime_job() {
     let digits = interface::receive_prime_generation();
+    
+    let start = Instant::now();
     let prime = gen::generate_first_prime_from(digits);
+    let duration = start.elapsed(); 
+    
     println!("The first prime of {digits} digits is {prime}!");
+    println!("It was discovered after {:?}.", duration);
 }
 
