@@ -1,7 +1,7 @@
 use std::io;
 use std::{thread::sleep, time::Duration};
 
-use num_bigint::{BigUint, ToBigUint};
+use num_bigint::BigUint;
 
 pub enum DataType {
     Number,
@@ -35,7 +35,7 @@ pub fn receive_work() -> BigUint {
 pub fn receive_crypto() -> (Vec<BigUint>, DataType, (BigUint, BigUint, BigUint)) {
     println!("Select 0 if you want to enter numbers or 1 if you want to enter text!");
     let data_type: DataType = loop {
-        match receive_number() {
+        match receive_number().to_u32_digits()[0] {
             0 => break DataType::Number,
             1 => break DataType::Text,
             _ => println!("Please enter 0 or 1"),
@@ -68,8 +68,8 @@ pub fn receive_crypto() -> (Vec<BigUint>, DataType, (BigUint, BigUint, BigUint))
     println!("Do you want to enter your own keys? If you want, enter 1, else enter 0");
     let keys_choice = receive_number();
 
-    let mut keys: (BigUint, BigUint, BigUint) = (BigUint::from(0), BigUint::from(0), BigUint::from(0));
-    if keys_choice.eq(&BigUint::from(1)) {
+    let mut keys: (BigUint, BigUint, BigUint) = (BigUint::from(0 as u32), BigUint::from(0 as u32), BigUint::from(0 as u32));
+    if keys_choice.to_u32_digits()[0] == 1 {
         println!("Please enter your keys! First enter the module, then the encoding exponent, then the decoding exponent, respectively");
         keys.0 = receive_number();
         keys.1 = receive_number();
