@@ -1,7 +1,4 @@
-use crate::modular;
-
-use num_bigint::{BigUint, BigInt};
-use integer_sqrt::IntegerSquareRoot;
+use num_bigint::{BigUint, BigInt, ToBigInt};
 
 /// This function implements fermat test of composites, returning true if the number is a composite
 /// and false if the number is a probable prime.
@@ -22,9 +19,9 @@ pub fn composite_test_miller_rabin(number: &BigUint, base: &BigUint) -> bool{
 
     let mut r = BigUint::from(0u32);
     loop {
-        let result = base.modpow(&(constant * BigUint::from(2u32).pow(r.to_u32_digits()[0])), number);
+        let result = base.modpow(&(&constant * BigUint::from(2u32).pow(r.to_u32_digits()[0])), number);
         if result == number-1u32 {return false}
-        if r == exp-1u32 {break};
+        if r == &exp-1u32 {break};
         r += 1u32
     }
 
@@ -70,7 +67,8 @@ pub fn is_prime_baillie_psw(number: &BigUint) -> bool {
 
     let mut d: BigInt = BigInt::from(5);
 
-    while jacobi(d, number) != -1{
+    let minus_one = BigInt::from(-1);
+    while jacobi(&d, &number.to_bigint().unwrap()) != minus_one{
         if d < BigInt::from(0) {
             d = (d-2) * -1;
         }
@@ -80,7 +78,7 @@ pub fn is_prime_baillie_psw(number: &BigUint) -> bool {
     }
     
     let p: BigInt = BigInt::from(1);
-    let q: BigInt = (1 - d)/4;
+    let q: BigInt = (1 - &d)/4;
 
     if composite_test_lucas(&number, &d, &p, &q) == true {
         return false;
@@ -142,7 +140,7 @@ pub fn composite_test_bruteforce(number: &BigUint) -> bool{
     let zero = BigUint::from(0u32);
 
     loop {
-        if number % i == zero {return true;}
+        if number % &i == zero {return true;}
 
         if i >= number.sqrt() {break}
         i += 1u32
@@ -153,7 +151,7 @@ pub fn composite_test_bruteforce(number: &BigUint) -> bool{
 /// This function checks if a number is a composite using lucas probable prime test
 pub fn composite_test_lucas(number: &BigUint, d: &BigInt, p: &BigInt, q: &BigInt) -> bool {
     let one = BigInt::from(1);
-    if (p.pow(2) - 4*q) / BigInt::from_biguint(num_bigint::Sign::Plus, *number) != one {
+    if (p.pow(2) - 4*q) / BigInt::from_biguint(num_bigint::Sign::Plus, number.clone()) != one {
         return false
     }
 
@@ -164,15 +162,15 @@ pub fn composite_test_lucas(number: &BigUint, d: &BigInt, p: &BigInt, q: &BigInt
 /// This function decomposes a number into number = 2^exp + q. It returns (exp, q).
 fn miller_decompose(number: &BigUint) -> (BigUint, BigUint){
     let mut q = number.clone();
-    if (q % 2u32).to_u32_digits()[0] == 0 {return (BigUint::from(0u32), BigUint::from(0u32));}
+    if (&q % 2u32).to_u32_digits()[0] == 0 {return (BigUint::from(0u32), BigUint::from(0u32));}
 
     let mut exp: BigUint = BigUint::from(0u32);
-    q = q - 1u32;
+    q = &q - 1u32;
 
     loop {
-        if (q % 2u32).to_u32_digits()[0] != 0u32 {break;}
+        if (&q % 2u32).to_u32_digits()[0] != 0u32 {break;}
 
-        q = q / 2u32;
+        q = &q / 2u32;
         exp += 1u32;
     }
 
@@ -180,32 +178,34 @@ fn miller_decompose(number: &BigUint) -> (BigUint, BigUint){
 }
 
 /// This function calculates the jacobi symbol of a and n.
-fn jacobi(mut a: i128, mut n:i128) -> i16 {
-    a = a % n;
+fn jacobi(ain: &BigInt, nin: &BigInt) -> BigInt {
+    let mut a = ain.clone();
+    let mut n = nin.clone();
+    a = a % &n;
     
-    let mut t = 1;
-    let mut r;
+    let mut t = BigInt::from(1);
+    let mut r: BigInt;
 
-    while a != 0 {
-        while a % 2 == 0 {
-            a /= 2;
-            r = n % 8;
+    while a.to_u32_digits().1[0] != 0 {
+        while (&a % 2u32).to_u32_digits().1[0] == 0u32 {
+            a /= 2u32;
+            r = &n % 8u32;
             
-            if r == 3 || r == 5{
+            if r.to_u32_digits().1[0] == 3u32 || r.to_u32_digits().1[0]== 5u32{
                 t = -t;
             }
         }
 
-        r = n;
-        n =a;
-        a = r;
+        r = n.clone();
+        n = a.clone();
+        a = r.clone();
         
-        if a % 4 == 3 && n % 4 == 3 {
+        if (&a % 4u32).to_u32_digits().1[0] == 3u32 && (&n % 4u32).to_u32_digits().1[0] == 3u32 {
             t = -t;
         }
-        a = a % n;
+        a = a % &n;
     }
 
-    if n == 1 {return t;} 
-    else {return 0}
+    if n.to_u32_digits().1[0] == 1 {return t;} 
+    else {return BigInt::from(0)}
 }

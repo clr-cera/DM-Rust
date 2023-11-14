@@ -2,6 +2,30 @@ use std::io;
 use std::{thread::sleep, time::Duration};
 
 use num_bigint::BigUint;
+use num_traits::Zero;
+
+
+pub enum JobChoice {
+    Crypto,
+    CheckPrime,
+    CheckPseudoPrime,
+    CheckStrongPseudoPrime,
+    GeneratePrimeFrom,
+    Quit,
+}
+
+impl JobChoice {
+    fn generate(choice: BigUint) -> Self {
+        if choice.is_zero() {return Self::Crypto;}
+        match choice.to_u32_digits()[0] {
+            1 => Self::CheckPrime,
+            2 => Self::CheckPseudoPrime,
+            3 => Self::CheckStrongPseudoPrime,
+            4 => Self::GeneratePrimeFrom,
+            5 | _=> Self::Quit,
+        }
+    }
+}
 
 pub enum DataType {
     Number,
@@ -9,12 +33,12 @@ pub enum DataType {
 }
 
 impl DataType {
-    pub fn print(&self, vector: &Vec<u64>){
+    pub fn print(&self, vector: &Vec<BigUint>){
         match self {
             Self::Number => println!("{:?}", vector),
             Self::Text => {
                 for i in vector{
-                    print!("{}", char::from_u32(*i as u32).unwrap());
+                    print!("{}", char::from_u32(i.to_u32_digits()[0]).unwrap());
                 }
             }
         }
@@ -22,14 +46,14 @@ impl DataType {
 }
 
 
-pub fn receive_work() -> BigUint {
+pub fn receive_work() -> JobChoice {
     sleep(Duration::from_millis(500));
     println!("\nSelect the type of job you want to do:\n0 for cryptography\n1 to check a prime\n2 to check a pseudoprime\n3 to check a strong pseudoprime\n4 to generate a prime\n5 to quit");
     let choice = receive_number();
 
     print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
     sleep(Duration::from_millis(500));
-    choice
+    JobChoice::generate(choice)
 }
 
 pub fn receive_crypto() -> (Vec<BigUint>, DataType, (BigUint, BigUint, BigUint)) {
@@ -68,8 +92,8 @@ pub fn receive_crypto() -> (Vec<BigUint>, DataType, (BigUint, BigUint, BigUint))
     println!("Do you want to enter your own keys? If you want, enter 1, else enter 0");
     let keys_choice = receive_number();
 
-    let mut keys: (BigUint, BigUint, BigUint) = (BigUint::from(0 as u32), BigUint::from(0 as u32), BigUint::from(0 as u32));
-    if keys_choice.to_u32_digits()[0] == 1 {
+    let mut keys: (BigUint, BigUint, BigUint) = (BigUint::from(1 as u32), BigUint::from(1 as u32), BigUint::from(1 as u32));
+    if !keys_choice.is_zero() {
         println!("Please enter your keys! First enter the module, then the encoding exponent, then the decoding exponent, respectively");
         keys.0 = receive_number();
         keys.1 = receive_number();

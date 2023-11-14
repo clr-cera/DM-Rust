@@ -1,3 +1,3 @@
 pub mod jobs;
 mod interface;
-pub use interface::receive_work;
+pub use interface::{receive_work, JobChoice};
