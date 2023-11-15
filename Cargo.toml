@@ -7,4 +7,3 @@ edition = "2021"
 
 [dependencies]
 integer-sqrt = '0.1.5'
-num-bigint= '0.4.4'

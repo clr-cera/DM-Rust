@@ -55,7 +55,7 @@ pub fn is_prime_fermat(number: u128, base: u128) -> bool {
     return true;
 }
 
-pub fn is_prime_baillie_psw(number: u128) -> bool {
+pub fn is_prime_baillie(number: u128) -> bool {
     if number == 0 || number == 1 || number % 2 == 0 { 
         return false;
     }
@@ -104,24 +104,23 @@ pub fn is_prime(number: u128) -> bool {
 /// 2 if the number is prime and 0 if the number is composite.
 pub fn is_pseudo_prime(number: u128, base: u128) -> u16 {
     let fermat_result = composite_test_fermat(number as u128, base as u128);
-    if fermat_result {return 0;}
-
     let brute_result = composite_test_bruteforce(number as u128);
 
-    if brute_result { return 1;}
-    else { return 2;}
+    if fermat_result == false && brute_result == true { return 1;}
+    else if brute_result == false { return 2;}
+    else {return 0;}
+
 }
 
 /// This function checks if a number is a strong pseudoprime. It returns 1 if the number is a strong pseudoprime,
 /// 2 if the number is prime and 0 if the number is composite.
 pub fn is_strong_pseudo_prime(number: u128, base: u128) -> u16 {
     let miller_result = composite_test_miller_rabin(number as u128, base as u128);
-    if miller_result {return 0;}
-    
     let brute_result = composite_test_bruteforce(number as u128);
 
-    if brute_result { return 1;}
-    else { return 2;}
+    if miller_result == false && brute_result == true { return 1;}
+    else if brute_result == false { return 2;}
+    else {return 0;}
 
 }
 
@@ -136,10 +135,6 @@ pub fn composite_test_bruteforce(number: u128) -> bool{
 
 /// This function checks if a number is a composite using lucas probable prime test
 pub fn composite_test_lucas(number: u128, d: i128, p: i128, q: i128) -> bool {
-    if (p.pow(2) - 4*q) / number as i128 != -1 {
-        return false
-    }
-
 
     return true;
 }
