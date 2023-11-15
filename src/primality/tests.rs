@@ -1,31 +1,27 @@
 use crate::modular;
 
-use num_bigint::{BigUint, BigInt};
 use integer_sqrt::IntegerSquareRoot;
 
 /// This function implements fermat test of composites, returning true if the number is a composite
 /// and false if the number is a probable prime.
-pub fn composite_test_fermat(number: &BigUint, test: &BigUint) -> bool{
-    let fermat_result: BigUint = test.modpow(&(number-(1u32)), number);
+pub fn composite_test_fermat(number: u128, test: u128) -> bool{
+    let fermat_result: u128 = modular::power_mod(test, number-1, number);
 
-    if fermat_result.to_u32_digits()[0] != 1 {return true;}
+    if fermat_result != 1 {return true;}
     else {return false;}
 }
 
 /// This function implements miller-rabin test of composites, returning true if the number is a composite
 /// and false if the number is a strong probable prime.
-pub fn composite_test_miller_rabin(number: &BigUint, base: &BigUint) -> bool{
+pub fn composite_test_miller_rabin(number: u128, base: u128) -> bool{
     let (exp, constant) =  miller_decompose(number);
 
-    let first = base.modpow(&constant, number);
-    if first.to_u32_digits()[0] == 1 {return false}
+    let first = modular::power_mod(base, constant, number);
+    if first == 1 {return false}
 
-    let mut r = BigUint::from(0u32);
-    loop {
-        let result = base.modpow(&(constant * BigUint::from(2u32).pow(r.to_u32_digits()[0])), number);
-        if result == number-1u32 {return false}
-        if r == exp-1u32 {break};
-        r += 1u32
+    for r in 0..exp {
+        let result = modular::power_mod(base, constant * 2u128.pow(r as u32), number);
+        if result == number-1 {return false}
     }
 
     return true;
@@ -34,8 +30,8 @@ pub fn composite_test_miller_rabin(number: &BigUint, base: &BigUint) -> bool{
 
 /// This function checks if a number is prime using miller-rabin test of composites, if it returns
 /// true, then the informed number has 1/4^10 of probability of being a prime
-pub fn is_prime_miller(number: &BigUint, base: &BigUint) -> bool {
-    if number.to_u32_digits()[0] == 0 || number.to_u32_digits()[0] == 1 || number.to_u32_digits()[0] % 2 == 0 { 
+pub fn is_prime_miller(number: u128, base: u128) -> bool {
+    if number == 0 || number == 1 || number % 2 == 0 { 
         return false;
     }
 
@@ -46,8 +42,8 @@ pub fn is_prime_miller(number: &BigUint, base: &BigUint) -> bool {
     return true;
 }
 
-pub fn is_prime_fermat(number: &BigUint, base: &BigUint) -> bool {
-    if number.to_u32_digits()[0] == 0 || number.to_u32_digits()[0] == 1 || number.to_u32_digits()[0] % 2 == 0 { 
+pub fn is_prime_fermat(number: u128, base: u128) -> bool {
+    if number == 0 || number == 1 || number % 2 == 0 { 
         return false;
     }
 
@@ -59,19 +55,19 @@ pub fn is_prime_fermat(number: &BigUint, base: &BigUint) -> bool {
     return true;
 }
 
-pub fn is_prime_baillie_psw(number: &BigUint) -> bool {
-    if number.to_u32_digits()[0] == 0 || number.to_u32_digits()[0] == 1 || number.to_u32_digits()[0] % 2 == 0 { 
+pub fn is_prime_baillie_psw(number: u128) -> bool {
+    if number == 0 || number == 1 || number % 2 == 0 { 
         return false;
     }
 
-    if composite_test_miller_rabin(number, &BigUint::from(2u32)) == true {
+    if composite_test_miller_rabin(number, 2) == true {
         return false;
     }
 
-    let mut d: BigInt = BigInt::from(5);
+    let mut d: i128 = 5;
 
-    while jacobi(d, number) != -1{
-        if d < BigInt::from(0) {
+    while jacobi(d, number as i128) != -1{
+        if d < 0 {
             d = (d-2) * -1;
         }
         else {
@@ -79,10 +75,10 @@ pub fn is_prime_baillie_psw(number: &BigUint) -> bool {
         }
     }
     
-    let p: BigInt = BigInt::from(1);
-    let q: BigInt = (1 - d)/4;
+    let p = 1;
+    let q = (1 - d)/4;
 
-    if composite_test_lucas(&number, &d, &p, &q) == true {
+    if composite_test_lucas(number, d, p, q) == true {
         return false;
     }
 
@@ -90,21 +86,15 @@ pub fn is_prime_baillie_psw(number: &BigUint) -> bool {
     return true;
 }
 
-pub fn is_prime(number: &BigUint) -> bool {
-    if number.to_u32_digits()[0] == 0 || number.to_u32_digits()[0] == 1 || number.to_u32_digits()[0] % 2 == 0 { 
+pub fn is_prime(number: u128) -> bool {
+    if number == 0 || number == 1 || number % 2 == 0 { 
         return false;
     }
-   
-    let mut base = BigUint::from(2u32);
-    loop {
-        if composite_test_miller_rabin(number, &base) == true {
+    
+    for base in 2..10 {
+        if composite_test_miller_rabin(number, base) == true {
             return false;
         }
-        if base.to_u32_digits()[0] == 10{
-            break;
-        }
-        base +=1u32;
-
     }
 
     return true;
@@ -112,11 +102,11 @@ pub fn is_prime(number: &BigUint) -> bool {
 
 /// This function checks if a number is a pseudoprime. It returns 1 if the number is a pseudoprime,
 /// 2 if the number is prime and 0 if the number is composite.
-pub fn is_pseudo_prime(number: &BigUint, base: &BigUint) -> u16 {
-    let fermat_result = composite_test_fermat(number , base);
+pub fn is_pseudo_prime(number: u128, base: u128) -> u16 {
+    let fermat_result = composite_test_fermat(number as u128, base as u128);
     if fermat_result {return 0;}
 
-    let brute_result = composite_test_bruteforce(number);
+    let brute_result = composite_test_bruteforce(number as u128);
 
     if brute_result { return 1;}
     else { return 2;}
@@ -124,11 +114,11 @@ pub fn is_pseudo_prime(number: &BigUint, base: &BigUint) -> u16 {
 
 /// This function checks if a number is a strong pseudoprime. It returns 1 if the number is a strong pseudoprime,
 /// 2 if the number is prime and 0 if the number is composite.
-pub fn is_strong_pseudo_prime(number: &BigUint, base: &BigUint) -> u16 {
-    let miller_result = composite_test_miller_rabin(number, base);
+pub fn is_strong_pseudo_prime(number: u128, base: u128) -> u16 {
+    let miller_result = composite_test_miller_rabin(number as u128, base as u128);
     if miller_result {return 0;}
     
-    let brute_result = composite_test_bruteforce(number);
+    let brute_result = composite_test_bruteforce(number as u128);
 
     if brute_result { return 1;}
     else { return 2;}
@@ -137,23 +127,16 @@ pub fn is_strong_pseudo_prime(number: &BigUint, base: &BigUint) -> u16 {
 
 /// This function bruteforces its way on checking if a number is composite, it never mistakes but
 /// has root of n complexity.
-pub fn composite_test_bruteforce(number: &BigUint) -> bool{
-    let mut i = BigUint::from(2u32);
-    let zero = BigUint::from(0u32);
-
-    loop {
-        if number % i == zero {return true;}
-
-        if i >= number.sqrt() {break}
-        i += 1u32
+pub fn composite_test_bruteforce(number: u128) -> bool{
+    for i in 2..=number.integer_sqrt() {
+        if number % i == 0 {return true;}
     }
     return false;
 } 
 
 /// This function checks if a number is a composite using lucas probable prime test
-pub fn composite_test_lucas(number: &BigUint, d: &BigInt, p: &BigInt, q: &BigInt) -> bool {
-    let one = BigInt::from(1);
-    if (p.pow(2) - 4*q) / BigInt::from_biguint(num_bigint::Sign::Plus, *number) != one {
+pub fn composite_test_lucas(number: u128, d: i128, p: i128, q: i128) -> bool {
+    if (p.pow(2) - 4*q) / number as i128 != -1 {
         return false
     }
 
@@ -162,21 +145,19 @@ pub fn composite_test_lucas(number: &BigUint, d: &BigInt, p: &BigInt, q: &BigInt
 }
 
 /// This function decomposes a number into number = 2^exp + q. It returns (exp, q).
-fn miller_decompose(number: &BigUint) -> (BigUint, BigUint){
-    let mut q = number.clone();
-    if (q % 2u32).to_u32_digits()[0] == 0 {return (BigUint::from(0u32), BigUint::from(0u32));}
+fn miller_decompose(mut number: u128) -> (u16, u128){
+    if number % 2 == 0 {return (0, 0);}
 
-    let mut exp: BigUint = BigUint::from(0u32);
-    q = q - 1u32;
+    let mut exp: u16 = 0;
+    number = number - 1;
 
     loop {
-        if (q % 2u32).to_u32_digits()[0] != 0u32 {break;}
+        if number % 2 != 0 {break;}
 
-        q = q / 2u32;
-        exp += 1u32;
+        number = number / 2;
+        exp += 1;
     }
-
-    (exp, q)
+    (exp, number)
 }
 
 /// This function calculates the jacobi symbol of a and n.

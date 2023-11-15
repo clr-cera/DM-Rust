@@ -1,16 +1,16 @@
-use num_bigint::BigUint;
+use crate::modular;
 
-fn transform(a: &BigUint, e: &BigUint, d: &BigUint) -> BigUint{
-    a.modpow(e, d)
+fn transform(a: u64, e: u64, d: u64) -> u64{
+    modular::power_mod(a as u128, e as u128, d as u128) as u64
 }
 
 /// This function encrypts a vector of u64 using keys e and denominator n.
-pub fn process(vector : &Vec<BigUint>, e: &BigUint, n: &BigUint) -> Vec<BigUint>{
-    let mut result: Vec<BigUint> = Vec::new();
+pub fn process(vector : &Vec<u64>, e: u64, n: u64) -> Vec<u64>{
+    let mut result: Vec<u64> = Vec::new();
     vector.clone_into(&mut result);
 
     for i in &mut result {
-        *i = transform(i, e, n);
+        *i = transform(*i, e, n);
     }
     result
 }

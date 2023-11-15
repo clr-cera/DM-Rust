@@ -1,27 +1,25 @@
 use integer_sqrt::IntegerSquareRoot;
 
-use num_bigint::BigUint;
-
 /// This function finds an invertible n and its inverse in a moduler space of divisor, if the space
 /// has no divisors, returns (1,1).
-pub fn find_n_and_inverse(divisor: &BigUint) -> (BigUint, BigUint){
+pub fn find_n_and_inverse(divisor: u64) -> (u64, u64){
     for number in divisor.integer_sqrt()..divisor {
-        let mut bigger: BigUint = *divisor;
-        let mut smaller: BigUint = number % divisor;
+        let mut bigger: u64 = divisor;
+        let mut smaller: u64 = number % divisor;
 
-        let mut actualq: BigUint;
-        let mut lastq: BigUint = BigUint::from(1);
-        let mut lastlastq: BigUint = BigUint::from(0);
+        let mut actualq: i128;
+        let mut lastq: i128 = 1;
+        let mut lastlastq: i128 = 0;
 
         loop {
-            let rest: BigUint = bigger % smaller;
-            actualq = lastlastq - (lastq * (bigger / smaller));
+            let rest: u64 = bigger % smaller;
+            actualq = lastlastq - (lastq * i128::from(bigger / smaller));
 
-            match rest.to_u64_digits()[0] { 
+            match rest { 
                 1 => {
-                    let inverse = (divisor + actualq) % divisor;
+                    let inverse = ((divisor as i128 + actualq) % divisor as i128) as u64;
                     if inverse < number {
-                        return (number, ((divisor + actualq) % divisor))
+                        return (number, ((divisor as i128 + actualq) % divisor as i128) as u64)
                     }                
                 }
                 
@@ -36,29 +34,29 @@ pub fn find_n_and_inverse(divisor: &BigUint) -> (BigUint, BigUint){
             lastq = actualq;
         }
     }
-    return (BigUint::from(1),BigUint::from(1));
+    return (1,1);
 }
 
 /// This functions tries to invert a number in a modular space of divisor, if it is not inversible
 /// returns 1.
-pub fn inverse(number: &BigUint, divisor: &BigUint) -> BigUint{
+pub fn inverse(number: u64, divisor: u64) -> u64{
 
-    let mut bigger: BigUint = *divisor;
-    let mut smaller: BigUint = number % divisor;
+    let mut bigger: u64 = divisor;
+    let mut smaller: u64 = number % divisor;
 
-    let mut actualq: BigUint;
-    let mut lastq: BigUint = BigUint::from(1 as u32);
-    let mut lastlastq: BigUint = BigUint::from(0 as u32);
+    let mut actualq: i128;
+    let mut lastq: i128 = 1;
+    let mut lastlastq: i128 = 0;
 
     loop {
-        let rest: BigUint = bigger % smaller;
-        actualq = lastlastq - (lastq * (bigger / smaller));
+        let rest: u64 = bigger % smaller;
+        actualq = lastlastq - (lastq * i128::from(bigger / smaller));
 
-        match rest.to_u32_digits()[0] { 
+        match rest { 
             1 => {
-                let inverse = (divisor + actualq) % divisor;
-                if inverse < *number {
-                    return (divisor + actualq) % divisor;
+                let inverse = ((divisor as i128 + actualq) % divisor as i128) as u64;
+                if inverse < number {
+                    return ((divisor as i128 + actualq) % divisor as i128) as u64;
                 }                
             }
             
@@ -72,5 +70,17 @@ pub fn inverse(number: &BigUint, divisor: &BigUint) -> BigUint{
         lastlastq = lastq;
         lastq = actualq;
     }
-    return BigUint::from(1 as u32);
+    return 1;
 }
+
+/// This function calculates the power of a number in a modular space. It calculates number^exp %
+/// module
+pub fn power_mod(number: u128, exp: u128, module: u128) -> u128 {
+    let mut result: u128 = 1;
+    for _ in 1..=exp{
+        result = (result * number) % module;
+    }
+
+    return result;
+}
+
