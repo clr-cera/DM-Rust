@@ -14,16 +14,16 @@ pub fn cryptography_job() {
     let e: BigUint;
     let f: BigUint;
    
-    if keys.0.to_u32_digits()[0] != 1 {
+    if keys.0.to_u32_digits()[0] != 0 {
         n = keys.0;
         e = keys.1;
         f = keys.2;
     }
 
     else {
-        let p: BigUint = BigUint::from(51001u32);
-        let q: BigUint = BigUint::from(41843u32);
-        let theta: BigUint = (&p - 1u32) * (&q - 1u32);
+        let p: BigUint = BigUint::from(51001);
+        let q: BigUint = BigUint::from(41843);
+        let theta: BigUint = (p - 1) * (q - 1);
         n = p*q;
         (f, e) = modular::find_n_and_inverse(&theta);
     }
